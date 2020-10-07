@@ -1,0 +1,13 @@
+Suv, 102849
+Sedan, 261157
+Taxi, 90095
+Van, 42983
+Truck-Box-Large, 585
+Hatchback, 5641
+Bus, 30189
+Police, 347
+MiniVan, 11810
+Truck-Box-Med, 1435
+Truck-Util, 829
+Truck-Pickup, 307
+Truck-Flatbed, 220

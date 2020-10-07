@@ -9,9 +9,11 @@
 *.dll
 *.lib
 *.dylib
+*.137
 mnist/
 data/
 detrac/
+DETRAC_YOLO_training/
 caffe/
 grasp/
 images/
