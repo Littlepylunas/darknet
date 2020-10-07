@@ -1,0 +1,5 @@
+classes = 2
+train  = detrac/DETRAC_YOLO_training/train.txt
+valid  = detrac/DETRAC_YOLO_testing/test.txt
+names = detrac/detrac.names
+backup = backup/
