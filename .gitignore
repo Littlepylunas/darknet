@@ -6,6 +6,9 @@
 *.png
 *.so
 *.exe
+*.zip
+*.rar
+*.7z
 *.dll
 *.lib
 *.dylib

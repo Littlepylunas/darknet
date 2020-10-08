@@ -1,4 +1,4 @@
-classes = 2
+classes = 13
 train  = detrac/DETRAC_YOLO_training/train.txt
 valid  = detrac/DETRAC_YOLO_testing/test.txt
 names = detrac/detrac.names
