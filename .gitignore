@@ -15,7 +15,7 @@
 *.137
 mnist/
 data/
-detrac_data/
+detrac_data*/
 DETRAC_YOLO_training/
 caffe/
 grasp/

@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import os
+from colorama import Fore, Back, Style
 import shutil
 import argparse
 import sys
@@ -149,7 +150,6 @@ class CreateDataset:
                 base = os.path.splitext(img_file)[0]
                 frame_num = int(base[3:].lstrip('0'))
                 if frame_num in frame_list:
-                    i = i + 1
                     copy_path = sequence_folder + '/' + img_file
                     rename_img = sequence + '_' + img_file
                     dst_path = self.output_train + rename_img
@@ -171,6 +171,11 @@ class CreateDataset:
                     if i < 50000:
                         file50k.write(data_path + '\n')
                     shutil.copy(copy_path, dst_path)
+                    i = i + 1
+                    if i % 100 == 0:
+                        b = "Processed " + str(i) + " images"
+                        print(Fore.YELLOW + b, end="\r")
+
         file.close()
         file5k.close()
         file10k.close()
@@ -185,6 +190,7 @@ class CreateDataset:
         Create YOLO annotations by iterating through the corresponding annotations for each image in
         the recreated dataset.
         '''
+        i = 0
         for sequence in sequences:
             tree = ET.parse(self.root_annots + sequence + '_v3' + '.xml')
             root = tree.getroot()
@@ -243,16 +249,26 @@ class CreateDataset:
                                 cls_index, yolo_x, yolo_y, yolo_width, yolo_height))
 
                     txt_file.close()
+                i = i + 1
+                if i % 100 == 0:
+                    b = "Converted " + str(i) + " annotations"
+                    print(Fore.YELLOW + b, end="\r")
 
     def check_train_annots(self):
         annots_list = []
+        i = 0
         for annots_file in os.listdir(self.output_annots):
             base = os.path.splitext(annots_file)[0]
             annots_list.append(base)
         for img_file in os.listdir(self.output_train):
             base2 = os.path.splitext(img_file)[0]
+            i = i + 1
+            if i % 100 == 0:
+                b = "Checked " + str(i) + " file"
+                print(Fore.YELLOW + b, end="\r")
             if base2 not in annots_list:
-                print(base2 + ' not found in annotation files.')
+                print(Fore.RED + base2 + ' not found in annotation files.')
+                print(Style.RESET_ALL)
 
 
 def main():
@@ -260,10 +276,10 @@ def main():
         description="Create YOLO training set with annotations from DETRAC dataset.")
     parser.add_argument("--DETRAC_images",
                         help="Relative location of DETRAC training images.",
-                        default="../detrac/detrac_data/Insight-MVT_Annotation_Train/")
+                        default="../detrac/detrac_data_train/Insight-MVT_Annotation_Train/")
     parser.add_argument("--DETRAC_annots",
                         help="Relative location of DETRAC annotation files.",
-                        default="../detrac/detrac_data/DETRAC-Train-Annotations-XML-v3/")
+                        default="../detrac/detrac_data_train/DETRAC-Train-Annotations-XML-v3/")
     parser.add_argument("--output_train",
                         help="Relative output location of training images.",
                         default="../detrac/DETRAC_YOLO_training/")
@@ -280,12 +296,14 @@ def main():
 
     DETRAC_images = args.DETRAC_images
     if not os.path.exists(DETRAC_images):
-        print('Cannot find path to DETRAC images.')
+        print(Fore.RED + 'Cannot find path to DETRAC images.')
+        print(Style.RESET_ALL)
         sys.exit()
 
     DETRAC_annots = args.DETRAC_annots
     if not os.path.exists(DETRAC_annots):
-        print('Cannot find path to DETRAC annotations.')
+        print(Fore.RED + 'Cannot find path to DETRAC annotations.')
+        print(Style.RESET_ALL)
         sys.exit()
 
     output_train = args.output_train
@@ -293,14 +311,14 @@ def main():
         os.makedirs(output_train)
 
     if not os.access(output_train, os.W_OK):
-        print('{} folder is not writeable.'.format(output_train))
+        print(Fore.YELLOW + '{} folder is not writeable.'.format(output_train))
 
     output_annots = args.output_annots
     if not os.path.exists(output_annots):
         os.makedirs(output_annots)
 
     if not os.access(output_annots, os.W_OK):
-        print('{} folder is not writeable.'.format(output_annots))
+        print(Fore.YELLOW + '{} folder is not writeable.'.format(output_annots))
 
     occlusion_threshold = args.occlusion_threshold
     truncation_threshold = args.truncation_threshold
@@ -318,25 +336,33 @@ def main():
     # Calculate occurrences for each class.
     print('Calculating number of occurrences for each class...')
     cls_count = dict(create_dataset.cls_occurrences(sequences))
-    print('Number of occurrences of each class: \n{}'.format(cls_count))
+    print(Fore.GREEN + 'Number of occurrences of each class: \n{}'.format(cls_count))
 
     # Get class list and also output to text file.
+    print(Style.RESET_ALL)
+    print('Creating class list text file...')
     class_list = create_dataset.get_classes(sequences)
-    print('Class list text file created.')
+    print(Fore.GREEN + 'Class list text file created.')
 
     # Recreate DETRAC dataset for YOLO training.
+    print(Style.RESET_ALL)
     print('Copying and recreating the DETRAC dataset...')
     create_dataset.recreate_dataset(sequences)
+    print(Fore.GREEN + '--------- Task done ----------')
 
     # Generate annotations for each image in the recreated dataset.
+    print(Style.RESET_ALL)
     print('Converting DETRAC v3 annotations into YOLO format...')
     create_dataset.generate_annotations(class_list, sequences)
+    print(Fore.GREEN + '--------- Task done ----------')
 
     # Check if any annotation files don't match with an image file.
+    print(Style.RESET_ALL)
     print('Checking for mismatches...')
     create_dataset.check_train_annots()
 
-    print('Convert done !')
+    print(Fore.GREEN + '------------- Convert done ! ---------------')
+    print(Style.RESET_ALL)
 
 
 if __name__ == '__main__':
