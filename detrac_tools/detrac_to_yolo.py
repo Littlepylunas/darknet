@@ -130,6 +130,14 @@ class CreateDataset:
         excluded.
         '''
         file = open(self.output_train + 'train.txt', 'w')
+        file5k = open(self.output_train + 'train5k.txt', 'w')
+        file10k = open(self.output_train + 'train10k.txt', 'w')
+        file15k = open(self.output_train + 'train15k.txt', 'w')
+        file20k = open(self.output_train + 'train20k.txt', 'w')
+        file30k = open(self.output_train + 'train30k.txt', 'w')
+        file40k = open(self.output_train + 'train40k.txt', 'w')
+        file50k = open(self.output_train + 'train50k.txt', 'w')
+        i = 0
         for sequence in sequences:
             tree = ET.parse(self.root_annots + sequence + '_v3' + '.xml')
             root = tree.getroot()
@@ -141,12 +149,36 @@ class CreateDataset:
                 base = os.path.splitext(img_file)[0]
                 frame_num = int(base[3:].lstrip('0'))
                 if frame_num in frame_list:
+                    i = i + 1
                     copy_path = sequence_folder + '/' + img_file
                     rename_img = sequence + '_' + img_file
                     dst_path = self.output_train + rename_img
-                    file.write(dst_path + '\n')
+
+                    data_path = dst_path.replace('../', '')
+                    file.write(data_path + '\n')
+                    if i < 5000:
+                        file5k.write(data_path + '\n')
+                    if i < 10000:
+                        file10k.write(data_path + '\n')
+                    if i < 15000:
+                        file15k.write(data_path + '\n')
+                    if i < 20000:
+                        file20k.write(data_path + '\n')
+                    if i < 30000:
+                        file30k.write(data_path + '\n')
+                    if i < 40000:
+                        file40k.write(data_path + '\n')
+                    if i < 50000:
+                        file50k.write(data_path + '\n')
                     shutil.copy(copy_path, dst_path)
         file.close()
+        file5k.close()
+        file10k.close()
+        file15k.close()
+        file20k.close()
+        file30k.close()
+        file40k.close()
+        file50k.close()
 
     def generate_annotations(self, class_list, sequences):
         '''
@@ -303,6 +335,8 @@ def main():
     # Check if any annotation files don't match with an image file.
     print('Checking for mismatches...')
     create_dataset.check_train_annots()
+
+    print('Convert done !')
 
 
 if __name__ == '__main__':
