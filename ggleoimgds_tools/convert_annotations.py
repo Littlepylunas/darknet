@@ -55,8 +55,9 @@ for DIR in DIRS:
                     os.chdir("Label")
 
                     for filename in tqdm(os.listdir(os.getcwd())):
+                        myTrain.write(
+                            'ggle-open-img/train/' + CLASS_DIR + '/' + filename + '\n')
                         filename_str = str.split(filename, ".")[0]
-                        myTrain.write(filename_str + '\n')
                         if filename.endswith(".txt"):
                             annotations = []
                             with open(filename) as f:
