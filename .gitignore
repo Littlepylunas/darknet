@@ -18,6 +18,8 @@ data/
 detrac_data*/
 DETRAC_YOLO_training/
 caffe/
+ggle-open-img/
+Dataset/
 grasp/
 images/
 opencv/
